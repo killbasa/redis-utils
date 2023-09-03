@@ -74,6 +74,18 @@ export class RedisClient extends Redis {
 	}
 
 	/**
+	 * Get the string value of a hash field.
+	 * @param hashKey - The key of the hash
+	 * @param key - The key of the value to set
+	 * @returns The value of the key
+	 */
+	public async hGet<T = unknown>(hashKey: string, key: string): Promise<T | null> {
+		const result = await super.hget(hashKey, key);
+		if (result === null) return result;
+		return JSON.parse(result) as T;
+	}
+
+	/**
 	 * Set the string value of a hash field.
 	 * @param hashKey - The key of the hash
 	 * @param key - The key of the value to set
