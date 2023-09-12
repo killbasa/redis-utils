@@ -4,5 +4,11 @@ module.exports = {
 	parserOptions: {
 		project: './tsconfig.eslint.json',
 		tsconfigRootDir: __dirname
-	}
+	},
+	overrides: [
+		{
+			files: ['tests/**/*'],
+			rules: { 'import/no-unresolved': 'off' }
+		}
+	]
 };
