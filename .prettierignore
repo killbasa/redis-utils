@@ -2,5 +2,5 @@
 .husky/
 dist/
 node_modules/
-bun.lockb
+yarn.lock
 LICENSE

@@ -1,12 +1,8 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { parse } from '#src/utils';
+import { MockClass, MockObjectClean } from '#mocks/generics.mock';
 
 describe('parse', () => {
-	// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-	const TestClass = class Test {
-		public key = 'value';
-	};
-
 	test('string', () => {
 		const value = '"String"';
 
@@ -66,14 +62,8 @@ describe('parse', () => {
 		const value = '{"string":"value","number":10,"bool":true,"null":null,"object":{"key":"value"},"array":[]}';
 
 		const result = parse(value);
-		expect(result).toStrictEqual({
-			string: 'value',
-			number: 10,
-			bool: true,
-			null: null,
-			object: { key: 'value' },
-			array: []
-		});
+
+		expect(result).toStrictEqual(MockObjectClean);
 	});
 
 	test('array', () => {
@@ -106,7 +96,7 @@ describe('parse', () => {
 	});
 
 	test('class', () => {
-		const value = TestClass;
+		const value = MockClass;
 
 		expect(() => {
 			// @ts-expect-error Wrong param type
@@ -118,6 +108,6 @@ describe('parse', () => {
 		const value = '{"key":"value"}';
 
 		const result = parse(value);
-		expect(result).toEqual(new TestClass());
+		expect(result).toEqual(new MockClass());
 	});
 });

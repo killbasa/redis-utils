@@ -21,6 +21,6 @@ function validate(data: unknown): void {
 		typeof data === 'function' ||
 		typeof data === 'bigint'
 	) {
-		throw TypeError('Symbol, Function, and BigInt are not supported.');
+		throw new TypeError('Symbol, Function, and BigInt are not supported.');
 	}
 }
