@@ -1,6 +1,6 @@
 {
 	"name": "@killbasa/redis-utils",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"author": "killbasa <contact@shaneb.xyz>",
 	"license": "MIT",
 	"type": "module",
@@ -9,8 +9,8 @@
 		"url": "https://github.com/killbasa/redis-utils.git"
 	},
 	"homepage": "https://github.com/killbasa/redis-utils",
-	"main": "dist/index.js",
-	"module": "dist/index.mjs",
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"exports": {
 		"import": {
@@ -23,9 +23,9 @@
 		}
 	},
 	"files": [
+		"dist/**/*.cjs*",
 		"dist/**/*.js*",
-		"dist/**/*.mjs*",
-		"dist/**/*.d*"
+		"dist/**/*.d.ts"
 	],
 	"scripts": {
 		"update": "yarn upgrade-interactive",
