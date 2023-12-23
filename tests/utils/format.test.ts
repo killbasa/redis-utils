@@ -1,12 +1,8 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
+import { MockArrowFunction, MockClass, MockFunction, MockObject } from '#mocks/generics.mock';
 import { format } from '#src/utils';
 
 describe('format', () => {
-	// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-	const TestClass = class Test {
-		public key = 'value';
-	};
-
 	test('string', () => {
 		const value = 'String';
 
@@ -25,7 +21,7 @@ describe('format', () => {
 		const value = BigInt(10);
 
 		expect(() => {
-			// @ts-expect-error Wrong param type
+			// @ts-expect-error - Wrong param type
 			format(value);
 		}).toThrow(TypeError);
 	});
@@ -56,23 +52,13 @@ describe('format', () => {
 		const value = Symbol('value');
 
 		expect(() => {
-			// @ts-expect-error Wrong param type
+			// @ts-expect-error - Wrong param type
 			format(value);
 		}).toThrow(TypeError);
 	});
 
 	test('object', () => {
-		const value = {
-			string: 'value',
-			number: 10,
-			bool: true,
-			undef: undefined,
-			null: null,
-			object: { key: 'value' },
-			array: []
-		};
-
-		const result = format(value);
+		const result = format(MockObject);
 		expect(result).toBe('{"string":"value","number":10,"bool":true,"null":null,"object":{"key":"value"},"array":[]}');
 	});
 
@@ -84,40 +70,30 @@ describe('format', () => {
 	});
 
 	test('function', () => {
-		const value = function (): boolean {
-			return true;
-		};
-
 		expect(() => {
-			// @ts-expect-error Wrong param type
-			format(value);
+			// @ts-expect-error - Wrong param type
+			format(MockFunction);
 		}).toThrow(TypeError);
 	});
 
 	test('arrow function', () => {
-		const value = (): boolean => {
-			return true;
-		};
-
 		expect(() => {
-			// @ts-expect-error Wrong param type
-			format(value);
+			// @ts-expect-error - Wrong param type
+			format(MockArrowFunction);
 		}).toThrow(TypeError);
 	});
 
 	test('class', () => {
-		const value = TestClass;
-
 		expect(() => {
-			// @ts-expect-error Wrong param type
-			format(value);
+			// @ts-expect-error - Wrong param type
+			format(MockClass);
 		}).toThrow(TypeError);
 	});
 
 	test('class instance', () => {
-		const value = new TestClass();
+		const value = new MockClass();
 
-		// @ts-expect-error Wrong param type
+		// @ts-expect-error - Wrong param type
 		const result = format(value);
 		expect(result).toBe('{"key":"value"}');
 	});

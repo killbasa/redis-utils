@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { format, parse } from '#src/utils';
 
 describe('e2e', () => {

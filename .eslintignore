@@ -3,4 +3,4 @@
 .vscode/
 dist/
 node_modules/
-bun.lockb
+yarn.lock

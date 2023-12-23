@@ -1,15 +1,25 @@
 import { format, parse } from './utils';
 import { Redis } from 'ioredis';
 import type { RedisKey, RedisOptions } from 'ioredis';
-import type { RedisData } from 'types';
+import type { RedisData } from './types';
 
-export class RedisClient extends Redis {
+export class RedisClient {
+	readonly #client: Redis;
+
 	/**
 	 * The options to pass to the {@link RedisClient}.
 	 * @param options - The {@link RedisOptions} to pass
 	 */
-	public constructor(options: RedisOptions) {
-		super(options);
+	public constructor(options: RedisOptions | { instance: Redis }) {
+		if ('instance' in options) {
+			this.#client = options.instance;
+		} else {
+			this.#client = new Redis(options);
+		}
+	}
+
+	public get client(): Redis {
+		return this.#client;
 	}
 
 	/**
@@ -17,8 +27,8 @@ export class RedisClient extends Redis {
 	 * @param key - The key to get.
 	 * @returns The value of the key.
 	 */
-	public override async get<T extends RedisData>(key: string): Promise<T | null> {
-		const result = await super.get(key);
+	public async get<T extends RedisData>(key: string): Promise<T | null> {
+		const result = await this.#client.get(key);
 		return parse<T>(result);
 	}
 
@@ -28,8 +38,8 @@ export class RedisClient extends Redis {
 	 * @param data - The value to set.
 	 * @returns If the operation was successful.
 	 */
-	public override async set<T extends RedisData>(key: string, data: T): Promise<'OK'> {
-		return super.set(key, format<T>(data));
+	public async set<T extends RedisData>(key: string, data: T): Promise<'OK'> {
+		return await this.#client.set(key, format<T>(data));
 	}
 
 	/**
@@ -40,7 +50,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async setEx<T extends RedisData>(key: string, data: T, milliseconds: number): Promise<'OK'> {
-		return super.setex(key, milliseconds / 1000, format<T>(data));
+		return await this.#client.setex(key, milliseconds / 1000, format<T>(data));
 	}
 
 	/**
@@ -49,7 +59,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async delete(key: string): Promise<number> {
-		return super.del(key);
+		return await this.#client.del(key);
 	}
 
 	/**
@@ -58,7 +68,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async deleteMany(keys: Iterable<string>): Promise<number> {
-		return super.del(Array.from(keys));
+		return await this.#client.del(Array.from(keys));
 	}
 
 	/**
@@ -68,7 +78,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async updateExpiry(key: string, milliseconds: number): Promise<number> {
-		return super.expire(key, milliseconds / 1000);
+		return await this.#client.expire(key, milliseconds / 1000);
 	}
 
 	/**
@@ -78,7 +88,7 @@ export class RedisClient extends Redis {
 	 * @returns The value of the key.
 	 */
 	public async hGet<T extends RedisData>(hashKey: string, key: string): Promise<T | null> {
-		const result = await super.hget(hashKey, key);
+		const result = await this.#client.hget(hashKey, key);
 		if (result === null) return result;
 		return parse<T>(result);
 	}
@@ -91,7 +101,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async hSet<T extends RedisData>(hashKey: string, key: string, data: T): Promise<number> {
-		return super.hset(hashKey, { [key]: format<T>(data) });
+		return await this.#client.hset(hashKey, { [key]: format<T>(data) });
 	}
 
 	/**
@@ -109,7 +119,7 @@ export class RedisClient extends Redis {
 			formattedData.set(key, format<T>(value));
 		}
 
-		return super.hset(hashKey, formattedData);
+		return await this.#client.hset(hashKey, formattedData);
 	}
 
 	/**
@@ -118,7 +128,7 @@ export class RedisClient extends Redis {
 	 * @returns A {@link Map} of the hash's values.
 	 */
 	public async hGetAll<T extends RedisData>(hashKey: string): Promise<Map<string, T>> {
-		const result = await super.hgetall(hashKey);
+		const result = await this.#client.hgetall(hashKey);
 
 		const map = new Map<string, T>();
 
@@ -136,7 +146,7 @@ export class RedisClient extends Redis {
 	 * @returns An {@link Array} of the hash's values.
 	 */
 	public async hGetValues<T extends RedisData>(hashKey: string): Promise<T[]> {
-		const result = await super.hgetall(hashKey);
+		const result = await this.#client.hgetall(hashKey);
 
 		const array: T[] = [];
 
@@ -155,7 +165,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async sAdd(key: string, member: string): Promise<boolean> {
-		return (await super.sadd(key, member)) === 1;
+		return (await this.#client.sadd(key, member)) === 1;
 	}
 
 	/**
@@ -165,7 +175,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async sRem(key: string, member: string): Promise<boolean> {
-		return (await super.srem(key, member)) === 1;
+		return (await this.#client.srem(key, member)) === 1;
 	}
 
 	/**
@@ -175,7 +185,7 @@ export class RedisClient extends Redis {
 	 * @returns If the operation was successful.
 	 */
 	public async sIsMember(key: string, member: string): Promise<boolean> {
-		return (await super.sismember(key, member)) === 1;
+		return (await this.#client.sismember(key, member)) === 1;
 	}
 
 	/**
@@ -185,7 +195,7 @@ export class RedisClient extends Redis {
 	 * @returns The number of elements added to the list.
 	 */
 	public async listPush<T extends RedisData>(key: string, ...data: T[]): Promise<number> {
-		return super.rpush(key, ...data.map((item) => format<T>(item)));
+		return await this.#client.rpush(key, ...data.map((item) => format<T>(item)));
 	}
 
 	/**
@@ -194,7 +204,7 @@ export class RedisClient extends Redis {
 	 * @returns An {@link Array} of the lists's values.
 	 */
 	public async listPop<T extends RedisData>(key: string): Promise<T[]> {
-		const result = await super.lrange(key, 0, -1);
+		const result = await this.#client.lrange(key, 0, -1);
 
 		const array: T[] = [];
 
@@ -211,14 +221,14 @@ export class RedisClient extends Redis {
 	 * @param pattern -  The pattern to match
 	 */
 	public deleteScanKeys(pattern: string): void {
-		super
+		this.#client
 			.scanStream({
 				type: 'scan',
 				match: pattern
 			})
 			.on('data', async (keys: RedisKey[]) => {
 				if (keys.length > 0) {
-					await super.unlink(keys).catch(() => null);
+					await this.#client.unlink(keys).catch(() => null);
 				}
 			});
 	}

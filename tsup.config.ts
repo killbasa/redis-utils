@@ -12,7 +12,7 @@ export default defineConfig({
 	skipNodeModulesBundle: true,
 	splitting: false,
 	sourcemap: true,
-	target: 'es2020',
+	target: 'es2022',
 	treeshake: true,
 	tsconfig: './src/tsconfig.json'
 });
