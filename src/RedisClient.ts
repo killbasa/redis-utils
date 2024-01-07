@@ -219,11 +219,12 @@ export class RedisClient {
 	/**
 	 * Unlink any keys that match a pattern.
 	 * @param pattern -  The pattern to match
+	 *
+	 * @remarks This is non-blocking as redis will unlink the keys in the background.
 	 */
 	public deleteScanKeys(pattern: string): void {
 		this.#client
 			.scanStream({
-				type: 'scan',
 				match: pattern
 			})
 			.on('data', async (keys: RedisKey[]) => {

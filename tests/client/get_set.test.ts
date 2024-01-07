@@ -44,6 +44,7 @@ describe('get / set', async () => {
 
 	test('IF undefined THEN throw TypeError', async ({ task: { name } }) => {
 		await expect(async () => {
+			// @ts-expect-error - Wrong param type
 			await client.set(name, undefined);
 		}).rejects.toThrowError(TypeError);
 	});
@@ -66,7 +67,11 @@ describe('get / set', async () => {
 	});
 
 	test('IF object THEN cleaned object', async ({ task: { name } }) => {
-		await client.set(name, MockObject);
+		await client.set(
+			name,
+			// @ts-expect-error - Wrong param type
+			MockObject
+		);
 		const result = await client.get(name);
 
 		expect(result).toStrictEqual(MockObjectClean);

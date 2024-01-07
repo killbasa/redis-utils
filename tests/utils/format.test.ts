@@ -11,10 +11,11 @@ describe('format', () => {
 	});
 
 	test('number', () => {
-		const value = 10;
+		const value_zero = 0;
+		const value_ten = 10;
 
-		const result = format(value);
-		expect(result).toBe('10');
+		expect(format(value_zero)).toBe('0');
+		expect(format(value_ten)).toBe('10');
 	});
 
 	test('bigint', () => {
@@ -37,6 +38,7 @@ describe('format', () => {
 		const value = undefined;
 
 		expect(() => {
+			// @ts-expect-error - Wrong param type
 			format(value);
 		}).toThrow(TypeError);
 	});
@@ -58,7 +60,10 @@ describe('format', () => {
 	});
 
 	test('object', () => {
-		const result = format(MockObject);
+		const result = format(
+			// @ts-expect-error - Wrong param type
+			MockObject
+		);
 		expect(result).toBe('{"string":"value","number":10,"bool":true,"null":null,"object":{"key":"value"},"array":[]}');
 	});
 

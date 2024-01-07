@@ -38,7 +38,11 @@ describe('hgetall / hmset', async () => {
 			['key2', MockObject]
 		]);
 
-		await client.hmSet(name, data);
+		await client.hmSet(
+			name,
+			// @ts-expect-error - Wrong param type
+			data
+		);
 		const [entries, values] = await Promise.all([
 			client.hGetAll(name), //
 			client.hGetValues(name)

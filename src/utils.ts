@@ -1,26 +1,32 @@
 import type { RedisData } from './types';
 
 export function format<T extends RedisData>(data: T): string {
-	validate(data);
+	const raw = data as unknown;
 
-	return JSON.stringify(data);
+	if (
+		raw === undefined || //
+		typeof raw === 'symbol' ||
+		typeof raw === 'function' ||
+		typeof raw === 'bigint'
+	) {
+		throw new TypeError('Symbol, Function, and BigInt are not supported.');
+	}
+
+	return JSON.stringify(raw);
 }
 
 export function parse<T extends RedisData>(data: string | null): T | null {
-	validate(data);
+	const raw = data as unknown;
 
-	if (data === null || data === 'null') return null;
+	if (typeof raw !== 'string' && raw !== null) {
+		throw new TypeError('Data must be type of string or null.');
+	}
 
-	return JSON.parse(data);
-}
+	if (raw === null || raw === 'null') return null;
 
-function validate(data: unknown): void {
-	if (
-		data === undefined || //
-		typeof data === 'symbol' ||
-		typeof data === 'function' ||
-		typeof data === 'bigint'
-	) {
-		throw new TypeError('Symbol, Function, and BigInt are not supported.');
+	try {
+		return JSON.parse(raw);
+	} catch {
+		return raw as T;
 	}
 }

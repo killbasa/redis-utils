@@ -1,11 +1,13 @@
+import type { RedisData } from '#src/types';
+
 export const MockObject = {
 	string: 'value',
 	number: 10,
 	bool: true,
-	undef: undefined,
 	null: null,
 	object: { key: 'value' },
-	array: []
+	array: [],
+	undef: undefined
 };
 
 export const MockObjectClean = {
@@ -15,7 +17,7 @@ export const MockObjectClean = {
 	null: null,
 	object: { key: 'value' },
 	array: []
-};
+} satisfies RedisData;
 
 export const MockFunction = function (): boolean {
 	return true;

@@ -9,10 +9,12 @@ export default defineConfig({
 			reporter: ['text']
 		},
 		setupFiles: ['./tests/vitest.setup.ts'],
+		include: ['./tests/**/*.test.ts'],
 		typecheck: {
 			enabled: true,
 			checker: 'tsc',
-			tsconfig: './tests/tsconfig.json'
+			tsconfig: './tests/tsconfig.json',
+			include: ['./tests/**/*.test-d.ts']
 		}
 	},
 	resolve: {

@@ -11,6 +11,20 @@ describe('hget / hset', async () => {
 		expect(result).toBe(null);
 	});
 
+	test('IF zero THEN zero', async ({ task: { name } }) => {
+		await client.hSet(name, 'key', 0);
+		const result = await client.hGet(name, 'key');
+
+		expect(result).toBe(0);
+	});
+
+	test('IF one THEN one', async ({ task: { name } }) => {
+		await client.hSet(name, 'key', 1);
+		const result = await client.hGet(name, 'key');
+
+		expect(result).toBe(1);
+	});
+
 	test('IF string THEN string', async ({ task: { name } }) => {
 		await client.hSet(name, 'key', 'value');
 		const result = await client.hGet(name, 'key');
@@ -19,7 +33,12 @@ describe('hget / hset', async () => {
 	});
 
 	test('IF object THEN object', async ({ task: { name } }) => {
-		await client.hSet(name, 'key', MockObject);
+		await client.hSet(
+			name,
+			'key',
+			// @ts-expect-error - Wrong param type
+			MockObject
+		);
 		const result = await client.hGet(name, 'key');
 
 		expect(result).toStrictEqual(MockObjectClean);
