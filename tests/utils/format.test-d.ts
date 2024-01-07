@@ -1,32 +1,68 @@
-import { assertType, describe, expectTypeOf, test } from 'vitest';
+import { assertType, describe, expect, expectTypeOf, test } from 'vitest';
 import type { RedisData } from '#src/types';
 import { format } from '#src/utils';
 import { MockArrowFunction, MockClass, MockFunction } from '#mocks/generics.mock';
 
 describe('format types', () => {
-	test('params', () => {
-		expectTypeOf(format).parameter(0).toEqualTypeOf<RedisData>();
+	describe('params', () => {
+		test('args', () => {
+			expectTypeOf(format).parameter(0).toEqualTypeOf<RedisData>();
+		});
 
-		assertType(format('string'));
-		assertType(format(10));
-		assertType(format(true));
-		assertType(format(undefined));
-		assertType(format(null));
-		assertType(format({}));
-		assertType(format([]));
+		test('string', () => {
+			assertType(format('string'));
+		});
 
-		// @ts-expect-error - Wrong param type
-		assertType(format(10n));
-		// @ts-expect-error - Wrong param type
-		assertType(format(Symbol('value')));
-		// @ts-expect-error - Wrong param type
-		assertType(format(MockFunction));
-		// @ts-expect-error - Wrong param type
-		assertType(format(MockArrowFunction));
-		// @ts-expect-error - Wrong param type
-		assertType(format(MockClass));
-		// @ts-expect-error - Wrong param type
-		assertType(format(new MockClass()));
+		test('boolean', () => {
+			assertType(format(true));
+		});
+
+		test('null', () => {
+			assertType(format(null));
+		});
+
+		test('object', () => {
+			assertType(format({}));
+		});
+
+		test('array', () => {
+			assertType(format([]));
+		});
+
+		test('constructor', () => {
+			// @ts-expect-error - Wrong param type
+			assertType(format(new MockClass()));
+		});
+
+		test('undefined', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(undefined)).toThrow();
+		});
+
+		test('bigint', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(10n)).toThrow();
+		});
+
+		test('symbol', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(Symbol('value'))).toThrow();
+		});
+
+		test('function', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(MockFunction)).toThrow();
+		});
+
+		test('arrow function', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(MockArrowFunction)).toThrow();
+		});
+
+		test('class constructor', () => {
+			// @ts-expect-error - Wrong param type
+			expect(() => format(MockClass)).toThrow();
+		});
 	});
 
 	test('return', () => {

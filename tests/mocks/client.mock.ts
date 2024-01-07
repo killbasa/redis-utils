@@ -2,12 +2,11 @@ import Redis from 'ioredis';
 import { RedisMemoryServer } from 'redis-memory-server';
 import { RedisClient } from '#src/RedisClient';
 
-let server: RedisMemoryServer;
-let rawClient: Redis;
-let client: RedisClient;
+let server: RedisMemoryServer | null;
+let rawClient: Redis | null;
+let client: RedisClient | null;
 
 export function getServer(): RedisMemoryServer {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (server) return server;
 
 	server = new RedisMemoryServer();
@@ -15,7 +14,6 @@ export function getServer(): RedisMemoryServer {
 }
 
 export async function getRawClient(): Promise<Redis> {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (rawClient) return rawClient;
 
 	const _server = getServer();
@@ -28,7 +26,6 @@ export async function getRawClient(): Promise<Redis> {
 }
 
 export async function getClient(): Promise<RedisClient> {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (client) return client;
 
 	const _rawClient = await getRawClient();
